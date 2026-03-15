@@ -1,0 +1,39 @@
+# ==============================
+# Import Libraries
+# ==============================
+
+import pandas as pd
+import numpy as np
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler, OneHotEncoder, PolynomialFeatures
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+
+from sklearn.linear_model import LinearRegression, Ridge
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
+
+from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
+
+import pickle
+
+# Load dataset
+df = pd.read_csv(r"C:\\Users\\priya\\OneDrive\\Documents\\DS_Projects\\YouTubeProject\\youtube_ad_revenue_dataset.csv")
+
+# Display dataset
+df.head()
+df.shape
+df.info()
+df.isnull().sum()
+df.duplicated().sum()
+#--- Data Cleaning ---
+df.drop_duplicates(inplace=True)
+#----Handle Missing Values---
+df["views"] = df["views"].fillna(df["views"].median())
+df["likes"] = df["likes"].fillna(df["likes"].median())
+df["comments"] = df["comments"].fillna(df["comments"].median())
+df["watch_time_minutes"] = df["watch_time_minutes"].fillna(df["watch_time_minutes"].median())
