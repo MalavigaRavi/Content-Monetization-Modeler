@@ -1,8 +1,3 @@
-Below is a **complete professional GitHub README.md** you can directly paste into your GitHub **README field**.
-It is written in a **portfolio + project evaluation friendly format**, which helps if you show this project during **Data Analyst / Data Science interviews**.
-
----
-
 # 📊 YouTube Ad Revenue Prediction using Machine Learning
 
 A **Machine Learning project** that predicts **YouTube advertisement revenue** based on video performance metrics such as views, likes, comments, watch time, category, and audience location.
