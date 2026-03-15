@@ -37,3 +37,157 @@ df["views"] = df["views"].fillna(df["views"].median())
 df["likes"] = df["likes"].fillna(df["likes"].median())
 df["comments"] = df["comments"].fillna(df["comments"].median())
 df["watch_time_minutes"] = df["watch_time_minutes"].fillna(df["watch_time_minutes"].median())
+# Remove duplicates
+df = df.drop_duplicates()
+
+# Remove extra spaces in column names
+df.columns = df.columns.str.strip()
+
+# Fill missing numeric values using median
+df["views"] = df["views"].fillna(df["views"].median())
+df["likes"] = df["likes"].fillna(df["likes"].median())
+df["comments"] = df["comments"].fillna(df["comments"].median())
+df["watch_time_minutes"] = df["watch_time_minutes"].fillna(df["watch_time_minutes"].median())
+# ---------------- Feature Engineering ---------------- #
+df["engagement_rate"] = ((df["likes"] + df["comments"]) / df["views"])\
+                        .replace([np.inf, -np.inf], 0)\
+                        .fillna(0)
+#---Date Feature Extraction-----
+df["date"] = pd.to_datetime(df["date"])
+
+df["month"] = df["date"].dt.month
+df["day"] = df["date"].dt.day
+
+df.drop(["video_id","date"], axis=1, inplace=True)
+#-----Outlier Detection-----
+sns.boxplot(df["ad_revenue_usd"])
+plt.show()
+#------Remove outliers using IQR-----
+Q1 = df["ad_revenue_usd"].quantile(0.25)
+Q3 = df["ad_revenue_usd"].quantile(0.75)
+
+IQR = Q3 - Q1
+
+df = df[
+    (df["ad_revenue_usd"] > Q1 - 1.5*IQR) &
+    (df["ad_revenue_usd"] < Q3 + 1.5*IQR)
+]
+#----Train Test Split---
+X = df.drop("ad_revenue_usd", axis=1)
+y = df["ad_revenue_usd"]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+# Numerical columns
+num_cols = [
+"views",
+"likes",
+"comments",
+"watch_time_minutes",
+"video_length_minutes",
+"subscribers",
+"engagement_rate",
+"month",
+"day"
+]
+
+# Categorical columns
+cat_cols = ["category","device","country"]
+preprocessor = ColumnTransformer(
+    transformers=[
+        ("num", StandardScaler(), num_cols),
+        ("cat", OneHotEncoder(handle_unknown="ignore"), cat_cols)
+    ]
+)
+#Linerar Regression
+lin_pipeline = Pipeline([
+    ("preprocessing", preprocessor),
+    ("model", LinearRegression())
+])
+
+lin_pipeline.fit(X_train, y_train)
+
+lin_pred = lin_pipeline.predict(X_test)
+
+#Polynomial Regression
+poly_pipeline = Pipeline([
+    ("preprocessing", preprocessor),
+    ("poly", PolynomialFeatures(degree=2)),
+    ("model", LinearRegression())
+])
+
+poly_pipeline.fit(X_train, y_train)
+
+poly_pred = poly_pipeline.predict(X_test)
+dt_pipeline = Pipeline([
+    ("preprocessing", preprocessor),
+    ("model", DecisionTreeRegressor())
+])
+
+dt_pipeline.fit(X_train, y_train)
+
+dt_pred = dt_pipeline.predict(X_test)
+
+#Decision Tree
+dt_pipeline = Pipeline([
+    ("preprocessing", preprocessor),
+    ("model", DecisionTreeRegressor())
+])
+
+dt_pipeline.fit(X_train, y_train)
+
+dt_pred = dt_pipeline.predict(X_test)
+
+#Random Forest
+rf_pipeline = Pipeline([
+    ("preprocessing", preprocessor),
+    ("model", RandomForestRegressor(random_state=42))
+])
+
+rf_pipeline.fit(X_train, y_train)
+
+rf_pred = rf_pipeline.predict(X_test)
+#Ridge Regression
+
+ridge_pipeline = Pipeline([
+    ("preprocessing", preprocessor),
+    ("model", Ridge())
+])
+
+ridge_pipeline.fit(X_train, y_train)
+
+ridge_pred = ridge_pipeline.predict(X_test)
+
+#Evaluation Metrics
+def evaluate(name, y_test, y_pred):
+
+    r2 = r2_score(y_test, y_pred)
+
+    mae = mean_absolute_error(y_test, y_pred)
+
+    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+
+    print(name)
+    print("R2 Score:", r2)
+    print("MAE:", mae)
+    print("RMSE:", rmse)
+    print("---------------------")
+
+evaluate("Linear Regression", y_test, lin_pred)
+
+evaluate("Polynomial Regression", y_test, poly_pred)
+
+evaluate("Decision Tree", y_test, dt_pred)
+
+evaluate("Random Forest", y_test, rf_pred)
+
+evaluate("Ridge Regression", y_test, ridge_pred)
+
+
+pickle.dump(rf_pipeline, open("revenue_model.pkl","wb"))
+
+print("Model saved successfully")
+
+
+
