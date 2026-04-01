@@ -264,14 +264,3 @@ Possible enhancements include:
 * Dashboard analytics
 
 ---
-
-# 👩‍💻 Author
-
-**Malaviga Ravi**
-
-Aspiring Data Scientist | Data Analyst
-
-
-
-
-These make your project **look like a real production ML project**, not just a course project.
