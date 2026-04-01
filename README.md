@@ -37,9 +37,13 @@ The model predicts:
 The following regression models were implemented and compared:
 
 1️⃣ **Linear Regression**
+
 2️⃣ **Polynomial Regression**
+
 3️⃣ **Decision Tree Regression**
+
 4️⃣ **Random Forest Regression**
+
 5️⃣ **Ridge Regression**
 
 The best-performing model was selected and deployed in the Streamlit application.
