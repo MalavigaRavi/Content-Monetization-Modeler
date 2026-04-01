@@ -53,9 +53,13 @@ The best-performing model was selected and deployed in the Streamlit application
 # 📂 Project Structure
 
 YouTube-Revenue-Prediction
+
 *Data- youtube_monetization.csv
+
 *model_training.ipynb
+
 *Saved Model- revenue_model.pkl
+
 *Streamlit app-app.py
 
 # 📊 Dataset Features
